@@ -24,24 +24,17 @@ feature_info = None
 
 def load_model_and_preprocessor():
     global model, preprocessor, feature_info
-    base_dir = os.path.dirname(os.path.abspath(__file__))
     try:
-        model = joblib.load(os.path.join(base_dir, "xgb_model.joblib"))
-        preprocessor = joblib.load(os.path.join(base_dir, "preprocessor.joblib"))
-        feature_info = joblib.load(os.path.join(base_dir, "feature_info.joblib"))
+        print("Current directory:", os.getcwd())
+        print("Files here:", os.listdir())
+        model = joblib.load("xgb_model.joblib")
+        preprocessor = joblib.load("preprocessor.joblib")
+        feature_info = joblib.load("feature_info.joblib")
         print("✅ Model and preprocessor loaded successfully")
         return True
-    except FileNotFoundError as e:
-        print(f"❌ Error loading model files: {e}")
-        print("🔧 Creating mock model for testing...")
-        model = MockModel()
-        preprocessor = MockPreprocessor()
-        feature_info = {'all_columns': ['PM2.5', 'PM10', 'NO2', 'SO2', 'CO', 'O3', 'Hour', 'Day', 'Month']}
-        return True
     except Exception as e:
-        print(f"❌ Unexpected error loading model files: {e}")
+        print(f"❌ Failed to load model files: {e}")
         return False
-
 class MockModel:
     """Mock model for testing without actual model files"""
     def predict(self, X):
