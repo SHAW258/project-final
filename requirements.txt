@@ -1,0 +1,10 @@
+flask
+flask-cors
+pandas
+numpy
+matplotlib
+xgboost
+optuna
+scikit-learn
+joblib
+gunicorn
