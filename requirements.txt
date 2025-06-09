@@ -8,3 +8,4 @@ optuna
 scikit-learn
 joblib
 gunicorn
+openpyxl
