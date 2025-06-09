@@ -43,9 +43,18 @@ def load_model_and_preprocessor():
 class MockModel:
     """Mock model for testing without actual model files"""
     def predict(self, X):
-        # Generate realistic AQI predictions based on input
-        base_aqi = 50 + np.random.normal(0, 20)
-        return [max(10, min(200, int(base_aqi)))]
+        # Generate deterministic AQI predictions based on input
+        if hasattr(X, 'iloc'):
+            # Use actual pollutant values if available
+            pm25 = X.iloc[0, 0] if len(X.columns) > 0 else 25
+            pm10 = X.iloc[0, 1] if len(X.columns) > 1 else 50
+            no2 = X.iloc[0, 2] if len(X.columns) > 2 else 10
+        else:
+            pm25, pm10, no2 = 25, 50, 10
+        
+        # Deterministic calculation based on pollutant levels
+        base_aqi = int((pm25 * 2.5) + (pm10 * 1.2) + (no2 * 3.0))
+        return [max(10, min(200, base_aqi))]
 
 class MockPreprocessor:
     """Mock preprocessor for testing"""
@@ -136,88 +145,197 @@ def predict_single_timestamp(model, preprocessor, feature_info, pollutant_data, 
         X = preprocessor.transform(df)
         prediction = int(model.predict(X)[0])
         
-        # Add realistic variation based on time and pollutants
+        # Add deterministic variation based on time and pollutants (no randomness)
         time_factor = np.sin(2 * np.pi * timestamp.hour / 24) * 5
         pollutant_factor = (pollutant_data.get('PM2.5', 25) / 25) * 3
-        variation = np.random.normal(0, 3) + time_factor + pollutant_factor
+        # Remove random variation, keep only deterministic factors
+        variation = time_factor + pollutant_factor
         prediction = max(0, int(prediction + variation))
         
         return prediction
     except Exception as e:
         print(f"⚠️ Prediction error: {e}")
-        # Fallback prediction
-        base_aqi = 50 + sum(pollutant_data.values()) / len(pollutant_data) * 0.5
-        return max(10, min(200, int(base_aqi)))
+        # Deterministic fallback prediction based on input
+        pm25 = pollutant_data.get('PM2.5', 25)
+        pm10 = pollutant_data.get('PM10', 50)
+        no2 = pollutant_data.get('NO2', 10)
+        base_aqi = int((pm25 * 2.5) + (pm10 * 1.2) + (no2 * 3.0))
+        return max(10, min(200, base_aqi))
 
-def create_simple_visualization(data, plot_type="current"):
-    """Create simplified visualization to avoid timeout issues"""
+def create_realistic_visualization(data, plot_type="current"):
+    """Create realistic AQI visualizations that match professional air quality dashboards"""
     try:
-        plt.style.use('default')
-        fig, ax = plt.subplots(figsize=(12, 8))
+        # Set professional style
+        plt.style.use('seaborn-v0_8-whitegrid')
         
         if plot_type == "current":
-            # Simple current AQI display
+            # Professional current AQI dashboard
+            fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(15, 12))
+            fig.suptitle('Air Quality Index Dashboard', fontsize=20, fontweight='bold', y=0.95)
+            
             aqi_value = data['aqi']
             aqi_details = get_aqi_details(aqi_value)
+            pollutants = data['pollutants']
             
-            # Create simple bar chart
-            pollutants = list(data['pollutants'].keys())
-            values = list(data['pollutants'].values())
-            colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD']
+            # 1. AQI Gauge Chart (top-left)
+            ax1.pie([aqi_value, 500-aqi_value], colors=[aqi_details['color'], '#f0f0f0'], 
+                   startangle=90, counterclock=False, wedgeprops=dict(width=0.3))
+            ax1.text(0, 0, f'{aqi_value}\nAQI', ha='center', va='center', 
+                    fontsize=24, fontweight='bold', color=aqi_details['color'])
+            ax1.set_title(f'{aqi_details["level"]} {aqi_details["emoji"]}', 
+                         fontsize=16, fontweight='bold', pad=20)
             
-            bars = ax.bar(pollutants, values, color=colors[:len(pollutants)], alpha=0.8)
-            ax.set_title(f'Current AQI: {aqi_value} - {aqi_details["level"]} {aqi_details["emoji"]}', 
-                        fontsize=16, fontweight='bold', color=aqi_details['color'])
-            ax.set_ylabel('Concentration', fontsize=12)
-            ax.tick_params(axis='x', rotation=45)
+            # 2. Pollutant Concentrations (top-right)
+            pollutant_names = list(pollutants.keys())
+            pollutant_values = list(pollutants.values())
+            colors = ['#e74c3c', '#3498db', '#f39c12', '#2ecc71', '#9b59b6', '#1abc9c']
             
-            # Add value labels
-            for bar, value in zip(bars, values):
-                height = bar.get_height()
-                ax.text(bar.get_x() + bar.get_width()/2., height + height*0.01,
-                       f'{value:.1f}', ha='center', va='bottom', fontweight='bold')
+            bars = ax2.barh(pollutant_names, pollutant_values, color=colors[:len(pollutant_names)])
+            ax2.set_xlabel('Concentration (μg/m³)', fontweight='bold')
+            ax2.set_title('Pollutant Levels', fontsize=16, fontweight='bold')
+            ax2.grid(axis='x', alpha=0.3)
+            
+            # Add value labels on bars
+            for i, (bar, value) in enumerate(zip(bars, pollutant_values)):
+                ax2.text(value + max(pollutant_values)*0.01, bar.get_y() + bar.get_height()/2, 
+                        f'{value:.1f}', va='center', fontweight='bold')
+            
+            # 3. AQI Scale Reference (bottom-left)
+            aqi_ranges = [50, 100, 150, 200, 300, 500]
+            aqi_colors = ['#00E400', '#FFFF00', '#FF7E00', '#FF0000', '#8F3F97', '#7E0023']
+            aqi_labels = ['Good', 'Moderate', 'Unhealthy\nfor Sensitive', 'Unhealthy', 'Very\nUnhealthy', 'Hazardous']
+            
+            y_pos = range(len(aqi_ranges))
+            bars3 = ax3.barh(y_pos, aqi_ranges, color=aqi_colors, alpha=0.8)
+            ax3.set_yticks(y_pos)
+            ax3.set_yticklabels(aqi_labels, fontsize=10)
+            ax3.set_xlabel('AQI Value', fontweight='bold')
+            ax3.set_title('AQI Scale Reference', fontsize=16, fontweight='bold')
+            
+            # Highlight current AQI level
+            current_level_idx = next((i for i, val in enumerate(aqi_ranges) if aqi_value <= val), len(aqi_ranges)-1)
+            bars3[current_level_idx].set_edgecolor('black')
+            bars3[current_level_idx].set_linewidth(3)
+            
+            # 4. Health Recommendations (bottom-right)
+            ax4.text(0.5, 0.7, 'Health Advisory', ha='center', va='center', 
+                    fontsize=16, fontweight='bold', transform=ax4.transAxes)
+            ax4.text(0.5, 0.4, aqi_details['health_message'], ha='center', va='center', 
+                    fontsize=12, wrap=True, transform=ax4.transAxes, 
+                    bbox=dict(boxstyle="round,pad=0.3", facecolor=aqi_details['color'], alpha=0.2))
+            ax4.set_xlim(0, 1)
+            ax4.set_ylim(0, 1)
+            ax4.axis('off')
             
         elif plot_type == "24hours":
-            # Simple 24-hour line chart
+            # Professional 24-hour forecast
+            fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(16, 12))
+            fig.suptitle('24-Hour AQI Forecast', fontsize=20, fontweight='bold')
+            
             timestamps = [pd.to_datetime(forecast['timestamp']) for forecast in data['forecasts']]
             aqi_values = [forecast['predicted_aqi'] for forecast in data['forecasts']]
+            colors = [forecast['color'] for forecast in data['forecasts']]
             
-            ax.plot(timestamps, aqi_values, linewidth=3, marker='o', markersize=6, color='#2E86AB')
-            ax.fill_between(timestamps, aqi_values, alpha=0.3, color='#2E86AB')
+            # Main forecast line chart
+            ax1.plot(timestamps, aqi_values, linewidth=4, marker='o', markersize=8, 
+                    color='#2c3e50', markerfacecolor='white', markeredgewidth=2)
             
-            # Format x-axis
-            ax.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
-            ax.xaxis.set_major_locator(mdates.HourLocator(interval=4))
-            plt.setp(ax.xaxis.get_majorticklabels(), rotation=45)
+            # Color-coded background zones
+            for i in range(len(timestamps)-1):
+                ax1.axvspan(timestamps[i], timestamps[i+1], 
+                           facecolor=colors[i], alpha=0.2)
             
-            ax.set_ylabel('AQI Value', fontsize=12, fontweight='bold')
-            ax.set_title('24-Hour AQI Forecast', fontsize=16, fontweight='bold')
-            ax.grid(True, alpha=0.3)
+            # AQI level reference lines
+            aqi_levels = [50, 100, 150, 200, 300]
+            level_colors = ['#00E400', '#FFFF00', '#FF7E00', '#FF0000', '#8F3F97']
+            level_labels = ['Good', 'Moderate', 'Unhealthy for Sensitive', 'Unhealthy', 'Very Unhealthy']
+            
+            for level, color, label in zip(aqi_levels, level_colors, level_labels):
+                ax1.axhline(y=level, color=color, linestyle='--', alpha=0.7, linewidth=2)
+                ax1.text(timestamps[-1], level, f' {label}', va='center', fontweight='bold', 
+                        bbox=dict(boxstyle="round,pad=0.2", facecolor=color, alpha=0.3))
+            
+            ax1.set_ylabel('AQI Value', fontsize=14, fontweight='bold')
+            ax1.set_title('Hourly AQI Predictions', fontsize=16, fontweight='bold')
+            ax1.grid(True, alpha=0.3)
+            ax1.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
+            ax1.xaxis.set_major_locator(mdates.HourLocator(interval=3))
+            plt.setp(ax1.xaxis.get_majorticklabels(), rotation=45)
+            
+            # Statistics bar chart
+            stats = data.get('statistics', {})
+            stat_names = ['Min', 'Average', 'Max']
+            stat_values = [stats.get('min', 0), stats.get('average', 0), stats.get('max', 0)]
+            stat_colors = ['#27ae60', '#3498db', '#e74c3c']
+            
+            bars = ax2.bar(stat_names, stat_values, color=stat_colors, alpha=0.8, width=0.6)
+            ax2.set_ylabel('AQI Value', fontsize=14, fontweight='bold')
+            ax2.set_title('24-Hour Statistics', fontsize=16, fontweight='bold')
+            ax2.grid(axis='y', alpha=0.3)
+            
+            # Add value labels on bars
+            for bar, value in zip(bars, stat_values):
+                height = bar.get_height()
+                ax2.text(bar.get_x() + bar.get_width()/2., height + 2,
+                        f'{value:.0f}', ha='center', va='bottom', fontweight='bold', fontsize=12)
             
         elif plot_type == "7days":
-            # Simple 7-day bar chart
-            dates = [pd.to_datetime(forecast['date']) for forecast in data['forecasts']]
-            aqi_values = [forecast['predicted_aqi'] for forecast in data['forecasts']]
-            day_names = [date.strftime('%a\n%m/%d') for date in dates]
-            colors_7d = [forecast['color'] for forecast in data['forecasts']]
+            # Professional 7-day forecast
+            fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(18, 8))
+            fig.suptitle('7-Day AQI Forecast', fontsize=20, fontweight='bold')
             
-            bars = ax.bar(range(7), aqi_values, color=colors_7d, alpha=0.8)
-            ax.set_xticks(range(7))
-            ax.set_xticklabels(day_names)
-            ax.set_ylabel('AQI Value', fontsize=12, fontweight='bold')
-            ax.set_title('7-Day AQI Forecast', fontsize=16, fontweight='bold')
+            forecasts = data['forecasts']
+            dates = [pd.to_datetime(forecast['date']) for forecast in forecasts]
+            aqi_values = [forecast['predicted_aqi'] for forecast in forecasts]
+            day_names = [forecast['day_name'][:3] for forecast in forecasts]  # Short day names
+            colors = [forecast['color'] for forecast in forecasts]
             
-            # Add value labels
-            for bar, value in zip(bars, aqi_values):
+            # Daily AQI bars with realistic styling
+            bars = ax1.bar(range(len(day_names)), aqi_values, color=colors, alpha=0.8, 
+                          edgecolor='white', linewidth=2, width=0.7)
+            
+            ax1.set_xticks(range(len(day_names)))
+            ax1.set_xticklabels(day_names, fontweight='bold')
+            ax1.set_ylabel('AQI Value', fontsize=14, fontweight='bold')
+            ax1.set_title('Daily AQI Predictions', fontsize=16, fontweight='bold')
+            ax1.grid(axis='y', alpha=0.3)
+            
+            # Add value labels and emoji indicators
+            for i, (bar, value, forecast) in enumerate(zip(bars, aqi_values, forecasts)):
                 height = bar.get_height()
-                ax.text(bar.get_x() + bar.get_width()/2., height + height*0.01,
-                       f'{value}', ha='center', va='bottom', fontweight='bold')
+                ax1.text(bar.get_x() + bar.get_width()/2., height + 3,
+                        f'{value}', ha='center', va='bottom', fontweight='bold', fontsize=11)
+                ax1.text(bar.get_x() + bar.get_width()/2., height/2,
+                        forecast['emoji'], ha='center', va='center', fontsize=20)
+            
+            # Weekly statistics pie chart
+            stats = data.get('weekly_statistics', {})
+            weekday_avg = stats.get('weekday_avg', 75)
+            weekend_avg = stats.get('weekend_avg', 65)
+            
+            pie_data = [weekday_avg, weekend_avg]
+            pie_labels = ['Weekdays', 'Weekends']
+            pie_colors = ['#3498db', '#e67e22']
+            
+            wedges, texts, autotexts = ax2.pie(pie_data, labels=pie_labels, colors=pie_colors, 
+                                              autopct='%1.0f', startangle=90, 
+                                              textprops={'fontweight': 'bold', 'fontsize': 12})
+            
+            ax2.set_title('Weekday vs Weekend\nAverage AQI', fontsize=16, fontweight='bold')
+            
+            # Add trend indicator
+            trend = stats.get('trend', 'Stable')
+            trend_color = '#27ae60' if trend == 'Improving' else '#e74c3c' if trend == 'Worsening' else '#f39c12'
+            ax2.text(0, -1.3, f'Weekly Trend: {trend}', ha='center', va='center', 
+                    fontsize=14, fontweight='bold', color=trend_color,
+                    bbox=dict(boxstyle="round,pad=0.3", facecolor=trend_color, alpha=0.2))
         
         plt.tight_layout()
         
-        # Convert to base64
+        # Convert to base64 with high quality
         buffer = io.BytesIO()
-        plt.savefig(buffer, format='png', dpi=100, bbox_inches='tight')
+        plt.savefig(buffer, format='png', dpi=150, bbox_inches='tight', 
+                   facecolor='white', edgecolor='none')
         buffer.seek(0)
         plot_base64 = base64.b64encode(buffer.getvalue()).decode()
         plt.close()
@@ -257,10 +375,11 @@ def forecast_24_hours(model, preprocessor, feature_info, pollutant_data, start_t
                 
                 timestamp += timedelta(hours=1)
                 
-                # Add small variations to pollutants
+                # Add deterministic variations:
                 for pollutant in current_data:
-                    variation = np.random.normal(0, 0.02)
-                    current_data[pollutant] *= (1 + variation)
+                    # Deterministic hourly variation based on time of day
+                    hour_factor = 0.02 * np.sin(2 * np.pi * (timestamp.hour + hour) / 24)
+                    current_data[pollutant] *= (1 + hour_factor)
                     current_data[pollutant] = max(0, current_data[pollutant])
                     
             except Exception as e:
@@ -305,7 +424,7 @@ def forecast_24_hours(model, preprocessor, feature_info, pollutant_data, start_t
         fallback_forecasts = []
         
         for hour in range(24):
-            base_aqi = 50 + hour * 2 + np.random.randint(-10, 10)
+            base_aqi = 50 + hour * 2 + int(10 * np.sin(2 * np.pi * hour / 24))
             base_aqi = max(10, min(150, base_aqi))
             aqi_details = get_aqi_details(base_aqi)
             
@@ -364,10 +483,11 @@ def forecast_7_days(model, preprocessor, feature_info, pollutant_data, start_tim
                 
                 timestamp += timedelta(days=1)
                 
-                # Add daily variations
+                # Replace random daily variations with deterministic ones:
                 for pollutant in current_data:
-                    variation = np.random.normal(0, 0.05)
-                    current_data[pollutant] *= (1 + variation)
+                    # Deterministic daily variation based on day of week
+                    day_factor = 0.05 * np.sin(2 * np.pi * day / 7)
+                    current_data[pollutant] *= (1 + day_factor)
                     current_data[pollutant] = max(0, current_data[pollutant])
                     
             except Exception as e:
@@ -416,6 +536,9 @@ def forecast_7_days(model, preprocessor, feature_info, pollutant_data, start_tim
             }
         }
 
+@app.route('/')
+def home():
+    return "Flask API is running!"
 # Flask API Routes
 
 @app.route('/health', methods=['GET'])
@@ -465,7 +588,7 @@ def predict_current():
             'pollutants': pollutants,
             'timestamp': current_time.isoformat()
         }
-        plot_base64 = create_simple_visualization(current_data, "current")
+        plot_base64 = create_realistic_visualization(current_data, "current")
         
         # Prepare response
         prediction_response = {
@@ -507,7 +630,7 @@ def predict_24_hours():
         
         # Create visualization (with timeout protection)
         try:
-            plot_base64 = create_simple_visualization(forecast_data, "24hours")
+            plot_base64 = create_realistic_visualization(forecast_data, "24hours")
             forecast_data['plot'] = plot_base64
         except Exception as viz_error:
             print(f"⚠️ Visualization error: {viz_error}")
@@ -542,7 +665,7 @@ def predict_7_days():
         
         # Create visualization
         try:
-            plot_base64 = create_simple_visualization(forecast_data, "7days")
+            plot_base64 = create_realistic_visualization(forecast_data, "7days")
             forecast_data['plot'] = plot_base64
         except Exception as viz_error:
             print(f"⚠️ Visualization error: {viz_error}")
