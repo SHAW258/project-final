@@ -11,6 +11,7 @@ import matplotlib
 matplotlib.use('Agg')  # Use non-interactive backend
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+import os
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -26,11 +27,17 @@ def load_model_and_preprocessor():
     """Load the trained model, preprocessor, and feature info from joblib files"""
     global model, preprocessor, feature_info
     try:
-        model = joblib.load("xgb_model.joblib")
-        preprocessor = joblib.load("preprocessor.joblib")
-        feature_info = joblib.load("feature_info.joblib")
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        model_path = os.path.join(base_dir, "xgb_model.joblib")
+        preprocessor_path = os.path.join(base_dir, "preprocessor.joblib")
+        feature_info_path = os.path.join(base_dir, "feature_info.joblib")
+
+        model = joblib.load(model_path)
+        preprocessor = joblib.load(preprocessor_path)
+        feature_info = joblib.load(feature_info_path)
+
         print("✅ Model and preprocessor loaded successfully")
-        return True
+        return model, preprocessor, feature_info
     except FileNotFoundError as e:
         print(f"❌ Error loading model files: {e}")
         # Create mock objects for testing without model files
