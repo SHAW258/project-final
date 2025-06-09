@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import warnings
 warnings.filterwarnings("ignore")
+import os
 
 app = Flask(__name__)
 CORS(app)
