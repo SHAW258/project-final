@@ -7,11 +7,10 @@ from datetime import datetime, timedelta
 import json
 import base64
 import io
-import matplotlib
+import matplotlib, os
 matplotlib.use('Agg')  # Use non-interactive backend
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-import os
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -24,28 +23,24 @@ preprocessor = None
 feature_info = None
 
 def load_model_and_preprocessor():
-    """Load the trained model, preprocessor, and feature info from joblib files"""
     global model, preprocessor, feature_info
+    base_dir = os.path.dirname(os.path.abspath(__file__))
     try:
-        base_dir = os.path.dirname(os.path.abspath(__file__))
-        model_path = os.path.join(base_dir, "xgb_model.joblib")
-        preprocessor_path = os.path.join(base_dir, "preprocessor.joblib")
-        feature_info_path = os.path.join(base_dir, "feature_info.joblib")
-
-        model = joblib.load(model_path)
-        preprocessor = joblib.load(preprocessor_path)
-        feature_info = joblib.load(feature_info_path)
-
+        model = joblib.load(os.path.join(base_dir, "xgb_model.joblib"))
+        preprocessor = joblib.load(os.path.join(base_dir, "preprocessor.joblib"))
+        feature_info = joblib.load(os.path.join(base_dir, "feature_info.joblib"))
         print("✅ Model and preprocessor loaded successfully")
-        return model, preprocessor, feature_info
+        return True
     except FileNotFoundError as e:
         print(f"❌ Error loading model files: {e}")
-        # Create mock objects for testing without model files
         print("🔧 Creating mock model for testing...")
         model = MockModel()
         preprocessor = MockPreprocessor()
         feature_info = {'all_columns': ['PM2.5', 'PM10', 'NO2', 'SO2', 'CO', 'O3', 'Hour', 'Day', 'Month']}
         return True
+    except Exception as e:
+        print(f"❌ Unexpected error loading model files: {e}")
+        return False
 
 class MockModel:
     """Mock model for testing without actual model files"""
