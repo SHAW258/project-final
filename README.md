@@ -1,81 +1,124 @@
 # 🌍 Air Quality Index (AQI) Prediction & Forecasting System
 
-An end-to-end Machine Learning API for real-time Air Quality Index (AQI) prediction, 24-hour hourly forecasting, and 7-day daily forecasting. Built with **FastAPI**, **XGBoost**, **SQLAlchemy**, **MySQL**, **Nginx**, and **Docker/SSL** support.
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.100%2B-009688.svg?style=flat-square&logo=fastapi)](https://fastapi.tiangolo.com/)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB.svg?style=flat-square&logo=python)](https://www.python.org/)
+[![MySQL](https://img.shields.io/badge/MySQL-8.0%2B-4479A1.svg?style=flat-square&logo=mysql)](https://www.mysql.com/)
+[![XGBoost](https://img.shields.io/badge/XGBoost-ML-152935.svg?style=flat-square)](https://xgboost.readthedocs.io/)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
+
+An enterprise-grade Machine Learning API for real-time **Air Quality Index (AQI)** prediction, 24-hour hourly forecasting, and 7-day trend analysis. Converted from Flask to **FastAPI**, integrated with **MySQL database logging**, **XGBoost machine learning**, **Nginx SSL reverse proxying**, and high-resolution chart generation.
 
 ---
 
-## 📁 Modular Directory Architecture
+## 📐 System Architecture
 
-The repository is organized into distinct, modular functional folders under the root directory:
+```
+                               ┌───────────────────────────┐
+                               │     Client / Browser      │
+                               └─────────────┬─────────────┘
+                                             │ HTTPS (8443 / 443)
+                                             ▼
+                               ┌───────────────────────────┐
+                               │    Nginx Reverse Proxy    │
+                               │   (SSL/TLS Termination)   │
+                               └─────────────┬─────────────┘
+                                             │ HTTP (8000)
+                                             ▼
+                               ┌───────────────────────────┐
+                               │   FastAPI Uvicorn App     │
+                               │    (backend/app.py)       │
+                               └──────┬─────────────┬──────┘
+                                      │             │
+                    ┌─────────────────┘             └─────────────────┐
+                    ▼                                                 ▼
+     ┌─────────────────────────────┐                   ┌─────────────────────────────┐
+     │   XGBoost ML Pipeline       │                   │    MySQL Database Engine    │
+     │   (ml_model/xgb_model)      │                   │    (database/database.py)   │
+     └─────────────────────────────┘                   └─────────────────────────────┘
+```
+
+---
+
+## 🌟 Key Features
+
+- ⚡ **High Performance FastAPI Backend**: Asynchronous OpenAPI 3.1 engine with automated interactive Swagger UI (`/docs`).
+- 🤖 **Native Machine Learning Model**: Uses a trained **XGBoost Regressor** with scikit-learn preprocessing pipelines to accurately predict AQI based on 6 core pollutants (`PM2.5`, `PM10`, `NO2`, `SO2`, `CO`, `O3`).
+- 🔮 **Multi-Horizon Forecasting**: Real-time AQI prediction, 24-hour hourly forecasting with trend statistics, and 7-day daily predictions.
+- 📊 **Dynamic Dashboard Visualizations**: High-resolution Matplotlib Base64 chart generation embedded directly into API JSON responses.
+- 🛢️ **MySQL Persistence**: Automatically logs every prediction, timestamp, pollutant value, and health recommendation into MySQL (`aqi_db.prediction_history`).
+- 🔒 **Nginx & SSL Support**: Complete Nginx reverse proxy configuration (`nginx.conf`) with SSL certificate support for secure HTTPS deployments.
+- 🌐 **Global Access Ready**: Integrated tunnel support (`localtunnel` / `cloudflared`) to expose the local server globally across networks.
+
+---
+
+## 📁 Repository Structure
 
 ```
 project-final/
-├── backend/                        # FastAPI Application & API Schemas
-│   ├── app.py                      # Main API Routes (/predict, /24hours, /7days, /history)
-│   ├── schemas.py                  # Pydantic validation schemas
-│   └── requirements.txt            # Python dependencies
+├── 📁 backend/                    # Core FastAPI Application & Pydantic Schemas
+│   ├── app.py                     # API Routes (/predict, /24hours, /7days, /history)
+│   ├── schemas.py                 # Pydantic request/response data contracts
+│   ├── run_https.py               # Direct HTTPS Uvicorn launcher
+│   ├── test_fastapi.py            # Automated API integration test suite
+│   └── requirements.txt           # Python dependency manifests
 │
-├── database/                       # MySQL Database Layer
-│   ├── database.py                 # SQLAlchemy MySQL connection engine
-│   ├── models.py                   # MySQL prediction_history table model
-│   ├── check_mysql_status.py       # MySQL connection status checker
-│   ├── test_mysql.py               # MySQL authentication test
-│   ├── .env                        # Active environment credentials (root/indrajit)
-│   └── .env.example                # Example environment template
+├── 📁 database/                   # Database Layer & MySQL Persistence
+│   ├── database.py                # SQLAlchemy MySQL connection pool & fallback logic
+│   ├── models.py                  # SQLAlchemy prediction_history table model
+│   ├── check_mysql_status.py      # Database connection verification tool
+│   ├── test_mysql.py              # PyMySQL authentication unit test
+│   ├── .env                       # Local environment credentials
+│   └── .env.example               # Environment template
 │
-├── ml_model/                       # Trained Machine Learning Model Assets
-│   ├── xgb_model.joblib            # Native Trained XGBoost AQI Model
-│   ├── preprocessor.joblib         # Scikit-learn Data Preprocessor
-│   ├── feature_info.joblib         # Feature metadata
-│   ├── feature_names.joblib        # Feature column names
-│   ├── aqi_tensorflow_model.h5     # TensorFlow Keras Model asset
-│   └── aqi_model.tflite            # TensorFlow Lite Model asset
+├── 📁 ml_model/                   # Machine Learning Model Assets
+│   ├── xgb_model.joblib           # Trained XGBoost AQI Regressor model
+│   ├── preprocessor.joblib        # Scikit-learn feature preprocessor
+│   ├── feature_info.joblib        # Feature metadata
+│   ├── feature_names.joblib       # Feature column names
+│   ├── aqi_tensorflow_model.h5    # Keras Neural Network asset
+│   └── aqi_model.tflite           # TensorFlow Lite model asset
 │
-├── ml_scripts/                     # Model Training, EDA & Evaluation Scripts
-│   ├── ML.py                       # XGBoost training pipeline script
-│   ├── Predict.py                  # Prediction logic helper script
-│   ├── calculate_epa.py            # EPA AQI calculation reference script
-│   ├── data_visualization.py       # Matplotlib visualization script
-│   ├── feature_importance.py       # Feature importance extraction script
-│   ├── EDA.ipynb                   # Exploratory Data Analysis Jupyter Notebook
-│   ├── test.py                     # Native model prediction test script
-│   ├── Output_Bucket.xlsx          # Dataset Excel file
-│   └── *.png                       # Model evaluation charts & graphs
+├── 📁 ml_scripts/                 # Model Training, EDA & Evaluation Pipeline
+│   ├── ML.py                      # Model training & serialization script
+│   ├── Predict.py                 # Standalone prediction test script
+│   ├── calculate_epa.py           # EPA standard AQI calculation utility
+│   ├── data_visualization.py      # Plotting pipeline
+│   ├── feature_importance.py      # Feature importance extraction
+│   ├── EDA.ipynb                  # Exploratory Data Analysis notebook
+│   ├── Output_Bucket.xlsx         # Dataset spreadsheet
+│   └── *.png                      # High-resolution model evaluation graphs
 │
-├── nginx/                          # Nginx SSL Reverse Proxy & Certificates
-│   ├── nginx.conf                  # Nginx SSL Reverse Proxy configuration
-│   ├── cert.pem / key.pem          # Local SSL Certificates
-│   └── generate_cert.py            # SSL Certificate generator script
+├── 📁 nginx/                      # Production Reverse Proxy & Security
+│   ├── nginx.conf                 # Nginx SSL reverse proxy configuration
+│   ├── cert.pem / key.pem         # X.509 SSL Certificate & Private Key
+│   └── generate_cert.py           # SSL certificate generation tool
 │
-├── utils/                          # Helper Tools & Live Data Fetchers
-│   └── fetch_live_pollutants.py    # Auto-fetch live pollutant API script
+├── 📁 utils/                      # Utilities & Live Data Integration
+│   └── fetch_live_pollutants.py   # Live air quality API fetcher
 │
-├── LICENSE                         # Project License
-└── README.md                       # Documentation
+├── SETUP.md                       # Comprehensive Deployment & Installation Guide
+├── LICENSE                        # MIT License
+└── README.md                      # Project Documentation
 ```
 
 ---
 
-## ⚙️ Prerequisites
+## ⚡ Quick Start
 
-- **Python**: 3.10+
-- **MySQL Server**: 8.0+ / MySQL Server 26.7
-
----
-
-## 🚀 How to Run the Application
-
-### 1. Clone & Install Dependencies
+### 1. Installation
 
 ```bash
+# Clone repository
 git clone https://github.com/SHAW258/project-final.git
 cd project-final
+
+# Install dependencies
 pip install -r backend/requirements.txt
 ```
 
 ### 2. Configure Database Credentials
 
-The MySQL database credentials are configured in `database/.env`:
+Ensure MySQL is running on `localhost:3306`, then update credentials in `database/.env`:
 
 ```env
 DB_HOST=localhost
@@ -85,37 +128,32 @@ DB_PASSWORD=indrajit
 DB_NAME=aqi_db
 ```
 
-### 3. Start the FastAPI Application
-
-From the root project directory:
+### 3. Launch Server
 
 ```bash
 python -m uvicorn backend.app:app --host 127.0.0.1 --port 8000 --reload
 ```
 
-- **Interactive Swagger UI**: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-- **ReDoc UI**: [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc)
-- **Health Check**: [http://127.0.0.1:8000/health](http://127.0.0.1:8000/health)
+- **Interactive Swagger Docs**: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+- **Health Endpoint**: [http://127.0.0.1:8000/health](http://127.0.0.1:8000/health)
+
+For full installation options, SSL configuration, Nginx setup, and global tunneling, refer to **[SETUP.md](SETUP.md)**.
 
 ---
 
 ## 📋 API Endpoints Reference
 
-| Method | Endpoint | Description | Sample Payload |
+| Method | Endpoint | Description | Request Body Example |
 | :--- | :--- | :--- | :--- |
-| `GET` | `/health` | Server, ML model & MySQL health check | None |
-| `GET` | `/info` | API details & active database info | None |
-| `POST` | `/predict` | Predict current AQI & generate dashboard chart | `{"pollutants": {"PM2.5": 36, "PM10": 64, "NO2": 8, "SO2": 2, "CO": 0.3, "O3": 0.01}}` |
-| `POST` | `/24hours` | Generate 24-hour hourly AQI forecast | `{"pollutants": {"PM2.5": 36, "PM10": 64, "NO2": 8, "SO2": 2, "CO": 0.3, "O3": 0.01}}` |
-| `POST` | `/7days` | Generate 7-day daily AQI forecast | `{"pollutants": {"PM2.5": 36, "PM10": 64, "NO2": 8, "SO2": 2, "CO": 0.3, "O3": 0.01}}` |
-| `GET` | `/history` | Fetch stored prediction records from MySQL | Query params: `?limit=20&skip=0` |
+| `GET` | `/health` | System, ML Model & MySQL Connection Health | *None* |
+| `GET` | `/info` | API Version & Database Engine Details | *None* |
+| `POST` | `/predict` | Current AQI Prediction + Base64 Gauge Chart | `{"pollutants": {"PM2.5": 36, "PM10": 64, "NO2": 8, "SO2": 2, "CO": 0.3, "O3": 0.01}}` |
+| `POST` | `/24hours` | 24-Hour Hourly Forecast + Base64 Trend Chart | `{"pollutants": {"PM2.5": 36, "PM10": 64, "NO2": 8, "SO2": 2, "CO": 0.3, "O3": 0.01}}` |
+| `POST` | `/7days` | 7-Day Forecast + Base64 Weekly Comparison Chart | `{"pollutants": {"PM2.5": 36, "PM10": 64, "NO2": 8, "SO2": 2, "CO": 0.3, "O3": 0.01}}` |
+| `GET` | `/history` | Query Stored MySQL Prediction Records | Query params: `?limit=20&skip=0` |
 
 ---
 
-## 🔒 Nginx Reverse Proxy Setup
+## 📜 License
 
-To run Nginx reverse proxy forwarding HTTPS (port 8443) -> FastAPI (port 8000):
-
-```bash
-nginx -c C:/Users/indrajit/Desktop/project-final/nginx/nginx.conf
-```
+This project is licensed under the [MIT License](LICENSE).
