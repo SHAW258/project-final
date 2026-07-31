@@ -16,3 +16,9 @@ nginx/logs/
 nginx/temp/
 logs/
 temp/
+
+# Virtual Environment & CLI binaries
+venv/
+render.exe
+cli_*
+CHANGELOG.md
