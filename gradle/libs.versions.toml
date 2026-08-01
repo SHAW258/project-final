@@ -14,6 +14,7 @@ okhttp = "5.4.0"
 coroutines = "1.11.0"
 lifecycle = "2.11.0"
 playServicesLocation = "21.4.0"
+splashscreen = "1.0.1"
 composeBom = "2026.06.01"
 activityCompose = "1.13.0"
 hiltNavigationCompose = "1.4.0"
@@ -39,6 +40,7 @@ androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lif
 
 # Location
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashscreen" }
 
 # Jetpack Compose
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }

@@ -8,9 +8,15 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.aqi_prediction.presentation.ui.AQIScreen
+import com.aqi_prediction.presentation.ui.SplashScreen
 import com.aqi_prediction.presentation.viewmodel.AqiViewModel
 import com.aqi_prediction.presentation.ui.theme.AQIVisionTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -39,14 +45,21 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
 
         setContent {
             AQIVisionTheme {
-                AQIScreen(
-                    viewModel = viewModel,
-                    onGpsClick = { checkLocationPermissionsAndFetch() }
-                )
+                var showSplash by remember { mutableStateOf(true) }
+
+                if (showSplash) {
+                    SplashScreen(onAnimationFinished = { showSplash = false })
+                } else {
+                    AQIScreen(
+                        viewModel = viewModel,
+                        onGpsClick = { checkLocationPermissionsAndFetch() }
+                    )
+                }
             }
         }
     }

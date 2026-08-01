@@ -12,7 +12,7 @@ android {
     defaultConfig {
         applicationId = "com.aqi_prediction"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 37
         versionCode = 1
         versionName = "1.0"
 
@@ -71,6 +71,7 @@ dependencies {
 
     // Location
     implementation(libs.play.services.location)
+    implementation(libs.androidx.core.splashscreen)
 
     // Testing
     testImplementation(libs.junit)
