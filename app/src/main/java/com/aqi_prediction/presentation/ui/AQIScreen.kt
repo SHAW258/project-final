@@ -33,6 +33,7 @@ import com.aqi_prediction.presentation.state.AqiUiState
 import com.aqi_prediction.presentation.viewmodel.AqiViewModel
 import com.aqi_prediction.presentation.ui.theme.*
 import androidx.core.graphics.toColorInt
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -198,7 +199,7 @@ fun AQIScreen(
             onDismiss = { showCustomDialog = false },
             onConfirm = { lat, lon ->
                 showCustomDialog = false
-                val label = String.format("Coords (%.2f, %.2f)", lat, lon)
+                val label = String.format(Locale.US, "Coords (%.2f, %.2f)", lat, lon)
                 viewModel.loadDataForCoordinates(lat, lon, label)
             }
         )
