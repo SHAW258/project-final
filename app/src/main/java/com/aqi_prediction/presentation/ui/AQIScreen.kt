@@ -1,5 +1,6 @@
 package com.aqi_prediction.presentation.ui
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -31,6 +32,7 @@ import com.aqi_prediction.domain.model.PollutantItem
 import com.aqi_prediction.presentation.state.AqiUiState
 import com.aqi_prediction.presentation.viewmodel.AqiViewModel
 import com.aqi_prediction.presentation.ui.theme.*
+import androidx.core.graphics.toColorInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,7 +59,7 @@ fun AQIScreen(
                 shape = CircleShape
             ) {
                 Icon(
-                    imageVector = AppIcons.Refresh,
+                    imageVector = AppIcons.REFRESH,
                     contentDescription = "Refresh",
                     modifier = Modifier.size(24.dp)
                 )
@@ -112,7 +114,7 @@ fun AQIScreen(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Icon(
-                                    imageVector = AppIcons.Warning,
+                                    imageVector = AppIcons.WARNING,
                                     contentDescription = null,
                                     tint = AqiUnhealthy,
                                     modifier = Modifier.size(48.dp)
@@ -164,7 +166,7 @@ fun AQIScreen(
 
                         // Live Pollutants Section
                         Text(
-                            text = AppStrings.LivePollutants,
+                            text = AppStrings.LIVE_POLLUTANTS,
                             color = MaterialTheme.colorScheme.onSurface,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold
@@ -218,13 +220,13 @@ fun HeaderSection(isOnline: Boolean, onCheckHealth: () -> Unit) {
         Spacer(modifier = Modifier.width(10.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = AppStrings.AppName,
+                text = AppStrings.APP_NAME,
                 color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Black
             )
             Text(
-                text = AppStrings.AppSlogan,
+                text = AppStrings.APP_SLOGAN,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 11.sp
             )
@@ -247,7 +249,7 @@ fun HeaderSection(isOnline: Boolean, onCheckHealth: () -> Unit) {
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = if (isOnline) AppStrings.BackendOnline else AppStrings.BackendOffline,
+                    text = if (isOnline) AppStrings.BACKEND_ONLINE else AppStrings.BACKEND_OFFLINE,
                     color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold
@@ -327,7 +329,7 @@ fun LocationSelectorBar(
                 .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(12.dp))
         ) {
             Icon(
-                imageVector = AppIcons.Gps,
+                imageVector = AppIcons.GPS,
                 contentDescription = "GPS",
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(24.dp)
@@ -345,7 +347,7 @@ fun LocationSelectorBar(
                 .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(12.dp))
         ) {
             Icon(
-                imageVector = AppIcons.Location,
+                imageVector = AppIcons.LOCATION,
                 contentDescription = "Custom Location",
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(24.dp)
@@ -447,7 +449,7 @@ fun HealthAdvisoryCard(message: String) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
-                    imageVector = AppIcons.Info,
+                    imageVector = AppIcons.INFO,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(18.dp)
@@ -579,7 +581,7 @@ fun ForecastSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = AppStrings.ForecastHeader,
+                text = AppStrings.FORECAST_HEADER,
                 color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold
@@ -635,7 +637,7 @@ fun ForecastSection(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = AppStrings.NoForecast,
+                        text = AppStrings.NO_FORECAST,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 12.sp
                     )
@@ -702,12 +704,12 @@ fun CustomLocationDialog(
         onDismissRequest = onDismiss,
         containerColor = MaterialTheme.colorScheme.surface,
         title = {
-            Text(AppStrings.CustomLocationTitle, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)
+            Text(AppStrings.CUSTOM_LOCATION_TITLE, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)
         },
         text = {
             Column {
                 Text(
-                    AppStrings.CustomLocationDesc,
+                    AppStrings.CUSTOM_LOCATION_DESC,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 12.sp
                 )
@@ -763,9 +765,10 @@ fun CustomLocationDialog(
     )
 }
 
+@SuppressLint("UseKtx")
 private fun parseHexColor(hex: String): Color {
     return try {
-        Color(android.graphics.Color.parseColor(hex))
+        Color(hex.toColorInt())
     } catch (e: Exception) {
         AccentBlue
     }

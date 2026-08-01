@@ -3,14 +3,12 @@ package com.aqi_prediction.presentation.ui.theme
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
 object AppIcons {
-    val Refresh: ImageVector
+    val REFRESH: ImageVector
         get() = ImageVector.Builder(
             name = "Refresh",
             defaultWidth = 24.dp,
@@ -38,7 +36,7 @@ object AppIcons {
             close()
         }.build()
 
-    val Gps: ImageVector
+    val GPS: ImageVector
         get() = ImageVector.Builder(
             name = "Gps",
             defaultWidth = 24.dp,
@@ -81,7 +79,7 @@ object AppIcons {
             close()
         }.build()
 
-    val Location: ImageVector
+    val LOCATION: ImageVector
         get() = ImageVector.Builder(
             name = "Location",
             defaultWidth = 24.dp,
@@ -106,7 +104,7 @@ object AppIcons {
             close()
         }.build()
 
-    val Warning: ImageVector
+    val WARNING: ImageVector
         get() = ImageVector.Builder(
             name = "Warning",
             defaultWidth = 24.dp,
@@ -136,7 +134,7 @@ object AppIcons {
             close()
         }.build()
 
-    val Info: ImageVector
+    val INFO: ImageVector
         get() = ImageVector.Builder(
             name = "Info",
             defaultWidth = 24.dp,

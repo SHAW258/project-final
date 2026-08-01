@@ -1,13 +1,13 @@
 package com.aqi_prediction.presentation.ui.theme
 
 object AppStrings {
-    const val AppName = "AQI Vision"
-    const val AppSlogan = "Real-Time Air Quality & ML Forecast"
-    const val LivePollutants = "Live Pollutants Breakdown"
-    const val ForecastHeader = "AQI Predictions & Forecasts"
-    const val NoForecast = "No forecast data available."
-    const val CustomLocationTitle = "Custom Coordinates"
-    const val CustomLocationDesc = "Enter Latitude and Longitude to query air quality anywhere worldwide."
-    const val BackendOnline = "Backend Online"
-    const val BackendOffline = "Backend Standby"
+    const val APP_NAME = "AQI Vision"
+    const val APP_SLOGAN = "Real-Time Air Quality & ML Forecast"
+    const val LIVE_POLLUTANTS = "Live Pollutants Breakdown"
+    const val FORECAST_HEADER = "AQI Predictions & Forecasts"
+    const val NO_FORECAST = "No forecast data available."
+    const val CUSTOM_LOCATION_TITLE = "Custom Coordinates"
+    const val CUSTOM_LOCATION_DESC = "Enter Latitude and Longitude to query air quality anywhere worldwide."
+    const val BACKEND_ONLINE = "Backend Online"
+    const val BACKEND_OFFLINE = "Backend Standby"
 }
