@@ -20,6 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.aqi_prediction.R
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun SplashScreen(onAnimationFinished: () -> Unit) {
@@ -32,7 +33,7 @@ fun SplashScreen(onAnimationFinished: () -> Unit) {
             animationSpec = tween(durationMillis = 1500)
         )
         // Keep visible for a moment
-        delay(1000)
+        delay(1000.milliseconds)
         // Fade out
         alpha.animateTo(
             targetValue = 0f,

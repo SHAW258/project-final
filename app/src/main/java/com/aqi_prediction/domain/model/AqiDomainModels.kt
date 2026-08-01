@@ -46,4 +46,33 @@ data class RawPollutants(
     val o3: Double = 0.0
 )
 
+data class PollutantDetailInfo(
+    val key: String,
+    val name: String,
+    val icon: String,
+    val description: String,
+    val healthyRange: String,
+    val dangerLevel: String,
+    val epaStandard: String,
+    val sources: List<String>,
+    val healthEffects: List<String>
+)
+
+data class AqiScaleLevel(
+    val range: String,
+    val level: String,
+    val colorHex: String,
+    val textColorHex: String = "#000000",
+    val description: String,
+    val healthAdvice: String
+)
+
+data class SensitiveGroupAdvice(
+    val title: String,
+    val icon: String,
+    val summary: String,
+    val adviceList: List<String>
+)
+
+
 

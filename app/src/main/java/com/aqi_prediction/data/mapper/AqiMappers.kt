@@ -119,32 +119,36 @@ private fun getCategory(key: String, valDouble: Double): String {
         "PM2.5" -> when {
             valDouble <= 12.0 -> "Good"
             valDouble <= 35.4 -> "Moderate"
-            valDouble <= 55.4 -> "Unhealthy (Sensitive)"
+            valDouble <= 55.4 -> "Unhealthy to Sensitive Groups"
+            valDouble <= 150.4 -> "Unhealthy"
             else -> "High Risk"
         }
         "PM10" -> when {
             valDouble <= 54.0 -> "Good"
             valDouble <= 154.0 -> "Moderate"
+            valDouble <= 254.0 -> "Unhealthy to Sensitive Groups"
             else -> "High Risk"
         }
-        else -> if (valDouble < 50.0) "Optimal" else "Elevated"
+        else -> if (valDouble < 50.0) "Good" else "Moderate"
     }
 }
 
 private fun getColor(key: String, valDouble: Double): String {
     return when (key) {
         "PM2.5" -> when {
-            valDouble <= 12.0 -> "#00E400"
-            valDouble <= 35.4 -> "#FFC107"
+            valDouble <= 12.0 -> "#98EC85"
+            valDouble <= 35.4 -> "#FFC000"
             valDouble <= 55.4 -> "#FF7E00"
-            else -> "#FF0000"
+            valDouble <= 150.4 -> "#E51A1A"
+            else -> "#8F3F97"
         }
         "PM10" -> when {
-            valDouble <= 54.0 -> "#00E400"
-            valDouble <= 154.0 -> "#FFC107"
-            else -> "#FF0000"
+            valDouble <= 54.0 -> "#98EC85"
+            valDouble <= 154.0 -> "#FFC000"
+            valDouble <= 254.0 -> "#FF7E00"
+            else -> "#E51A1A"
         }
-        else -> "#00E400"
+        else -> "#98EC85"
     }
 }
 

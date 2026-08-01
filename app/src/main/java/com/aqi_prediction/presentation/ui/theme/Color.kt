@@ -19,13 +19,13 @@ val LIGHT_TEXT_SECONDARY = Color(0xFF64748B)
 val ACCENT_BLUE = Color(0xFF38BDF8)
 val ACCENT_GREEN = Color(0xFF10B981)
 
-// EPA Standard AQI Colors (Source: Official Chart)
-val AQI_GOOD = Color(0xFF00E400)
-val AQI_MODERATE = Color(0xFFFFFF00)
-val AQI_SENSITIVE = Color(0xFFFF7E00)
-val AQI_UNHEALTHY = Color(0xFFFF0000)
-val AQI_VERY_UNHEALTHY = Color(0xFF8F3F97)
-val AQI_HAZARDOUS = Color(0xFF7E0023)
+// Official EPA Standard AQI Colors (Matching AQI Guide Chart)
+val AQI_GOOD = Color(0xFF98EC85)          // 0-50: Bright Light Green
+val AQI_MODERATE = Color(0xFFFFC000)      // 51-100: Golden Yellow
+val AQI_SENSITIVE = Color(0xFFFF7E00)     // 101-150: Vivid Orange
+val AQI_UNHEALTHY = Color(0xFFE51A1A)     // 151-200: Vibrant Red
+val AQI_VERY_UNHEALTHY = Color(0xFF8F3F97) // 201-300: Deep Purple
+val AQI_HAZARDOUS = Color(0xFF660014)      // 301-500: Deep Maroon
 
 // Status
 val STATUS_ONLINE = Color(0xFF10B981)

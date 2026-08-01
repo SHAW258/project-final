@@ -168,12 +168,12 @@ class AqiRepositoryImpl @Inject constructor(
             }
 
             val (level, color, emoji) = when {
-                usAqiVal <= 50 -> Triple("Good", "#00E400", "🟢")
-                usAqiVal <= 100 -> Triple("Moderate", "#FFFF00", "🟡")
-                usAqiVal <= 150 -> Triple("Unhealthy (Sensitive)", "#FF7E00", "🟠")
-                usAqiVal <= 200 -> Triple("Unhealthy", "#FF0000", "🔴")
+                usAqiVal <= 50 -> Triple("Good", "#98EC85", "🟢")
+                usAqiVal <= 100 -> Triple("Moderate", "#FFC000", "🟡")
+                usAqiVal <= 150 -> Triple("Unhealthy to Sensitive Groups", "#FF7E00", "🟠")
+                usAqiVal <= 200 -> Triple("Unhealthy", "#E51A1A", "🔴")
                 usAqiVal <= 300 -> Triple("Very Unhealthy", "#8F3F97", "🟣")
-                else -> Triple("Hazardous", "#7E0023", "🤎")
+                else -> Triple("Hazardous", "#660014", "🟤")
             }
 
             list.add(
@@ -220,12 +220,12 @@ class AqiRepositoryImpl @Inject constructor(
             }
 
             val (level, color, emoji) = when {
-                maxAqi <= 50 -> Triple("Good", "#00E400", "🟢")
-                maxAqi <= 100 -> Triple("Moderate", "#FFFF00", "🟡")
-                maxAqi <= 150 -> Triple("Unhealthy (Sensitive)", "#FF7E00", "🟠")
-                maxAqi <= 200 -> Triple("Unhealthy", "#FF0000", "🔴")
+                maxAqi <= 50 -> Triple("Good", "#98EC85", "🟢")
+                maxAqi <= 100 -> Triple("Moderate", "#FFC000", "🟡")
+                maxAqi <= 150 -> Triple("Unhealthy to Sensitive Groups", "#FF7E00", "🟠")
+                maxAqi <= 200 -> Triple("Unhealthy", "#E51A1A", "🔴")
                 maxAqi <= 300 -> Triple("Very Unhealthy", "#8F3F97", "🟣")
-                else -> Triple("Hazardous", "#7E0023", "🤎")
+                else -> Triple("Hazardous", "#660014", "🟤")
             }
 
             list.add(
@@ -256,12 +256,12 @@ class AqiRepositoryImpl @Inject constructor(
         val aqi = maxOf(aqiPm25, aqiPm10)
 
         val (level, color, emoji, healthMsg) = when {
-            aqi <= 50 -> Quadruple("Good", "#00E400", "🟢", "Air quality is satisfactory, and air pollution poses little or no risk.")
-            aqi <= 100 -> Quadruple("Moderate", "#FFFF00", "🟡", "Air quality is acceptable. However, sensitive individuals may experience minor symptoms.")
-            aqi <= 150 -> Quadruple("Unhealthy for Sensitive Groups", "#FF7E00", "🟠", "Members of sensitive groups may experience health effects. General public is less likely to be affected.")
-            aqi <= 200 -> Quadruple("Unhealthy", "#FF0000", "🔴", "Some members of the general public may experience health effects; members of sensitive groups may experience more serious health effects.")
+            aqi <= 50 -> Quadruple("Good", "#98EC85", "🟢", "Air quality is satisfactory, and air pollution poses little or no risk.")
+            aqi <= 100 -> Quadruple("Moderate", "#FFC000", "🟡", "Air quality is acceptable. However, sensitive individuals may experience minor symptoms.")
+            aqi <= 150 -> Quadruple("Unhealthy to Sensitive Groups", "#FF7E00", "🟠", "Members of sensitive groups may experience health effects. General public is less likely to be affected.")
+            aqi <= 200 -> Quadruple("Unhealthy", "#E51A1A", "🔴", "Some members of the general public may experience health effects; members of sensitive groups may experience more serious health effects.")
             aqi <= 300 -> Quadruple("Very Unhealthy", "#8F3F97", "🟣", "Health alert: The risk of health effects is increased for everyone.")
-            else -> Quadruple("Hazardous", "#7E0023", "🤎", "Health warning of emergency conditions: everyone is more likely to be affected.")
+            else -> Quadruple("Hazardous", "#660014", "🟤", "Health warning of emergency conditions: everyone is more likely to be affected.")
         }
 
         val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US)

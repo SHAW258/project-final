@@ -32,3 +32,7 @@ jks/
 keystore/
 *.keystore
 *.jks
+
+# Temporary Clones
+temp_frontend_repo/
+
