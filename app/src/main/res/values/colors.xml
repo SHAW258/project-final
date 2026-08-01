@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand & Base Theme Colors -->
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- Modern Dark Glassmorphic Palette -->
+    <color name="bg_dark">#0B0F19</color>
+    <color name="card_bg">#161F33</color>
+    <color name="card_stroke">#26334D</color>
+    <color name="card_bg_light">#1E293B</color>
+    <color name="text_primary">#F8FAFC</color>
+    <color name="text_secondary">#94A3B8</color>
+    <color name="accent_blue">#38BDF8</color>
+    <color name="accent_green">#10B981</color>
+    <color name="chip_bg">#1E293B</color>
+
+    <!-- EPA Standard Air Quality Severity Colors -->
+    <color name="aqi_good">#00E400</color>
+    <color name="aqi_moderate">#F59E0B</color>
+    <color name="aqi_unhealthy_sensitive">#FF7E00</color>
+    <color name="aqi_unhealthy">#EF4444</color>
+    <color name="aqi_very_unhealthy">#8B5CF6</color>
+    <color name="aqi_hazardous">#991B1B</color>
+
+    <!-- Status Indicators -->
+    <color name="status_online">#10B981</color>
+    <color name="status_offline">#EF4444</color>
+</resources>

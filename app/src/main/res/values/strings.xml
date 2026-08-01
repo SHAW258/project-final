@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">AQI Vision</string>
+    <string name="sub_header">Real-Time Air Quality &amp; Machine Learning Forecast</string>
+    <string name="api_online">Backend Online</string>
+    <string name="api_offline">Backend Cold Start / Standby</string>
+    <string name="select_location">Select City</string>
+    <string name="use_gps">Use Current Location</string>
+    <string name="custom_coords">Custom Lat / Lon</string>
+    <string name="aqi_index">Air Quality Index (AQI)</string>
+    <string name="health_advisory_title">Health Recommendation</string>
+    <string name="pollutants_header">Live Pollutants Breakdown</string>
+    <string name="forecast_header">AQI Predictions &amp; Forecasts</string>
+    <string name="tab_24h">24-Hour Forecast</string>
+    <string name="tab_7d">7-Day Forecast</string>
+    <string name="retry">Retry</string>
+    <string name="loading_data">Fetching live air quality metrics from Open-Meteo &amp; Render ML model…</string>
+    <string name="error_title">Network / Data Error</string>
+</resources>
