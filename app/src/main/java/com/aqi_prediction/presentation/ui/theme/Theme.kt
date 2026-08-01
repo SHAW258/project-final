@@ -8,31 +8,31 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 private val DarkColorScheme = darkColorScheme(
-    primary = AccentBlue,
+    primary = ACCENT_BLUE,
     onPrimary = Color.White,
-    secondary = AccentGreen,
-    onSecondary = DarkBg,
-    background = DarkBg,
-    onBackground = DarkTextPrimary,
-    surface = DarkCardBg,
-    onSurface = DarkTextPrimary,
-    surfaceVariant = DarkCardBg,
-    onSurfaceVariant = DarkTextSecondary,
-    outline = DarkCardStroke
+    secondary = ACCENT_GREEN,
+    onSecondary = DARK_BG,
+    background = DARK_BG,
+    onBackground = DARK_TEXT_PRIMARY,
+    surface = DARK_CARD_BG,
+    onSurface = DARK_TEXT_PRIMARY,
+    surfaceVariant = DARK_CARD_BG,
+    onSurfaceVariant = DARK_TEXT_SECONDARY,
+    outline = DARK_CARD_STROKE
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = AccentBlue,
+    primary = ACCENT_BLUE,
     onPrimary = Color.White,
-    secondary = AccentGreen,
-    onSecondary = LightBg,
-    background = LightBg,
-    onBackground = LightTextPrimary,
-    surface = LightCardBg,
-    onSurface = LightTextPrimary,
-    surfaceVariant = LightCardBg,
-    onSurfaceVariant = LightTextSecondary,
-    outline = LightCardStroke
+    secondary = ACCENT_GREEN,
+    onSecondary = LIGHT_BG,
+    background = LIGHT_BG,
+    onBackground = LIGHT_TEXT_PRIMARY,
+    surface = LIGHT_CARD_BG,
+    onSurface = LIGHT_TEXT_PRIMARY,
+    surfaceVariant = LIGHT_CARD_BG,
+    onSurfaceVariant = LIGHT_TEXT_SECONDARY,
+    outline = LIGHT_CARD_STROKE
 )
 
 @Composable

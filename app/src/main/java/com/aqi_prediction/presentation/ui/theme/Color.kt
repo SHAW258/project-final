@@ -2,32 +2,31 @@ package com.aqi_prediction.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Modern Dark Palette
-val DarkBg = Color(0xFF0F172A)
-val DarkCardBg = Color(0xFF1E293B)
-val DarkCardStroke = Color(0xFF334155)
-val DarkTextPrimary = Color(0xFFF8FAFC)
-val DarkTextSecondary = Color(0xFF94A3B8)
+// Theme Palette
+val DARK_BG = Color(0xFF0F172A)
+val DARK_CARD_BG = Color(0xFF1E293B)
+val DARK_CARD_STROKE = Color(0xFF334155)
+val DARK_TEXT_PRIMARY = Color(0xFFF8FAFC)
+val DARK_TEXT_SECONDARY = Color(0xFF94A3B8)
 
-// Modern Light Palette
-val LightBg = Color(0xFFF8FAFC)
-val LightCardBg = Color(0xFFFFFFFF)
-val LightCardStroke = Color(0xFFE2E8F0)
-val LightTextPrimary = Color(0xFF0F172A)
-val LightTextSecondary = Color(0xFF64748B)
+val LIGHT_BG = Color(0xFFF8FAFC)
+val LIGHT_CARD_BG = Color(0xFFFFFFFF)
+val LIGHT_CARD_STROKE = Color(0xFFE2E8F0)
+val LIGHT_TEXT_PRIMARY = Color(0xFF0F172A)
+val LIGHT_TEXT_SECONDARY = Color(0xFF64748B)
 
-// Shared Accent Colors
-val AccentBlue = Color(0xFF38BDF8)
-val AccentGreen = Color(0xFF10B981)
+// Shared Accents
+val ACCENT_BLUE = Color(0xFF38BDF8)
+val ACCENT_GREEN = Color(0xFF10B981)
 
-// EPA Air Quality Standard Severity Colors
-val AqiGood = Color(0xFF00E400)
-val AqiModerate = Color(0xFFF59E0B)
-val AqiUnhealthySensitive = Color(0xFFFF7E00)
-val AqiUnhealthy = Color(0xFFEF4444)
-val AqiVeryUnhealthy = Color(0xFF8B5CF6)
-val AqiHazardous = Color(0xFF991B1B)
+// EPA Standard AQI Colors (Source: Official Chart)
+val AQI_GOOD = Color(0xFF00E400)
+val AQI_MODERATE = Color(0xFFFFFF00)
+val AQI_SENSITIVE = Color(0xFFFF7E00)
+val AQI_UNHEALTHY = Color(0xFFFF0000)
+val AQI_VERY_UNHEALTHY = Color(0xFF8F3F97)
+val AQI_HAZARDOUS = Color(0xFF7E0023)
 
-// Status Indicators
-val StatusOnline = Color(0xFF10B981)
-val StatusOffline = Color(0xFFEF4444)
+// Status
+val STATUS_ONLINE = Color(0xFF10B981)
+val STATUS_OFFLINE = Color(0xFFEF4444)

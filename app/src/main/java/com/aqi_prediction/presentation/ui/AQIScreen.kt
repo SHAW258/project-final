@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -20,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -32,6 +34,7 @@ import com.aqi_prediction.domain.model.PollutantItem
 import com.aqi_prediction.presentation.state.AqiUiState
 import com.aqi_prediction.presentation.viewmodel.AqiViewModel
 import com.aqi_prediction.presentation.ui.theme.*
+import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.toColorInt
 import java.util.Locale
 
@@ -106,7 +109,7 @@ fun AQIScreen(
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth(0.9f)
-                                .border(1.dp, AqiUnhealthy, RoundedCornerShape(20.dp)),
+                                .border(1.dp, AQI_UNHEALTHY, RoundedCornerShape(20.dp)),
                             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                             shape = RoundedCornerShape(20.dp)
                         ) {
@@ -117,13 +120,13 @@ fun AQIScreen(
                                 Icon(
                                     imageVector = AppIcons.WARNING,
                                     contentDescription = null,
-                                    tint = AqiUnhealthy,
+                                    tint = AQI_UNHEALTHY,
                                     modifier = Modifier.size(48.dp)
                                 )
                                 Spacer(modifier = Modifier.height(12.dp))
                                 Text(
                                     text = "ERROR [${err.errorCode}]",
-                                    color = AqiUnhealthy,
+                                    color = AQI_UNHEALTHY,
                                     fontSize = 18.sp,
                                     fontWeight = FontWeight.Bold,
                                     letterSpacing = 1.sp
@@ -246,7 +249,7 @@ fun HeaderSection(isOnline: Boolean, onCheckHealth: () -> Unit) {
                 Box(
                     modifier = Modifier
                         .size(8.dp)
-                        .background(if (isOnline) StatusOnline else StatusOffline, CircleShape)
+                        .background(if (isOnline) STATUS_ONLINE else STATUS_OFFLINE, CircleShape)
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
@@ -767,11 +770,30 @@ fun CustomLocationDialog(
 }
 
 @SuppressLint("UseKtx")
+@Composable
 private fun parseHexColor(hex: String): Color {
-    return try {
+    val rawColor = try {
         Color(hex.toColorInt())
     } catch (e: Exception) {
-        AccentBlue
+        ACCENT_BLUE
+    }
+
+    // In Light Mode, automatically darken light colors (Yellow/Orange) to maintain contrast ratio > 4.5:1
+    return if (!isSystemInDarkTheme()) {
+        val argb = rawColor.toArgb()
+        // If color is very light (Luminance > 0.6), darken it significantly
+        if (ColorUtils.calculateLuminance(argb) > 0.6) {
+            val hsv = FloatArray(3)
+            android.graphics.Color.colorToHSV(argb, hsv)
+            // Reduce brightness and increase saturation to make it "richer" and readable
+            hsv[1] = (hsv[1] * 1.5f).coerceIn(0.6f, 1f)
+            hsv[2] = (hsv[2] * 0.6f).coerceIn(0f, 0.6f)
+            Color(android.graphics.Color.HSVToColor(hsv))
+        } else {
+            rawColor
+        }
+    } else {
+        rawColor
     }
 }
 
@@ -823,7 +845,7 @@ fun ThreeStepLoadingScreen(loadingState: AqiUiState.Loading) {
                         .fillMaxWidth()
                         .height(8.dp)
                         .clip(RoundedCornerShape(4.dp)),
-                    color = AccentGreen,
+                    color = ACCENT_GREEN,
                     trackColor = MaterialTheme.colorScheme.outline
                 )
 
@@ -840,14 +862,14 @@ fun ThreeStepLoadingScreen(loadingState: AqiUiState.Loading) {
                         modifier = Modifier
                             .weight(1f)
                             .height(2.dp),
-                        color = if (step >= 2) AccentGreen else MaterialTheme.colorScheme.outline
+                        color = if (step >= 2) ACCENT_GREEN else MaterialTheme.colorScheme.outline
                     )
                     StepItem(stepNumber = 2, title = "XGBoost ML", currentStep = step)
                     HorizontalDivider(
                         modifier = Modifier
                             .weight(1f)
                             .height(2.dp),
-                        color = if (step >= 3) AccentGreen else MaterialTheme.colorScheme.outline
+                        color = if (step >= 3) ACCENT_GREEN else MaterialTheme.colorScheme.outline
                     )
                     StepItem(stepNumber = 3, title = "Forecast", currentStep = step)
                 }
@@ -857,7 +879,7 @@ fun ThreeStepLoadingScreen(loadingState: AqiUiState.Loading) {
                 // Pulsing Circular Progress
                 CircularProgressIndicator(
                     modifier = Modifier.size(48.dp),
-                    color = if (step == 1) MaterialTheme.colorScheme.primary else if (step == 2) AqiModerate else AccentGreen,
+                    color = if (step == 1) MaterialTheme.colorScheme.primary else if (step == 2) parseHexColor("#FFFF00") else ACCENT_GREEN,
                     strokeWidth = 4.dp
                 )
 
@@ -891,7 +913,7 @@ private fun StepItem(stepNumber: Int, title: String, currentStep: Int) {
     val isCompleted = currentStep > stepNumber
     val isCurrent = currentStep == stepNumber
     val circleColor = when {
-        isCompleted -> AccentGreen
+        isCompleted -> ACCENT_GREEN
         isCurrent -> MaterialTheme.colorScheme.primary
         else -> MaterialTheme.colorScheme.outline
     }
