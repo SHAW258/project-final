@@ -6,9 +6,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -29,11 +26,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aqi_prediction.domain.model.CityLocation
-import com.aqi_prediction.domain.model.CurrentPrediction
 import com.aqi_prediction.domain.model.ForecastItem
 import com.aqi_prediction.domain.model.PollutantItem
-import com.aqi_prediction.domain.error.AppError
-import com.aqi_prediction.presentation.event.AqiUiEvent
 import com.aqi_prediction.presentation.state.AqiUiState
 import com.aqi_prediction.presentation.viewmodel.AqiViewModel
 import com.aqi_prediction.presentation.ui.theme.*
@@ -54,15 +48,19 @@ fun AQIScreen(
     var showCustomDialog by remember { mutableStateOf(false) }
 
     Scaffold(
-        containerColor = BgDark,
+        containerColor = MaterialTheme.colorScheme.background,
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { viewModel.refreshCurrentLocation() },
-                containerColor = AccentBlue,
+                containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = Color.White,
                 shape = CircleShape
             ) {
-                Text("🔄", fontSize = 20.sp)
+                Icon(
+                    imageVector = AppIcons.Refresh,
+                    contentDescription = "Refresh",
+                    modifier = Modifier.size(24.dp)
+                )
             }
         }
     ) { paddingValues ->
@@ -106,15 +104,22 @@ fun AQIScreen(
                             modifier = Modifier
                                 .fillMaxWidth(0.9f)
                                 .border(1.dp, AqiUnhealthy, RoundedCornerShape(20.dp)),
-                            colors = CardDefaults.cardColors(containerColor = CardBg),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                             shape = RoundedCornerShape(20.dp)
                         ) {
                             Column(
                                 modifier = Modifier.padding(24.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
+                                Icon(
+                                    imageVector = AppIcons.Warning,
+                                    contentDescription = null,
+                                    tint = AqiUnhealthy,
+                                    modifier = Modifier.size(48.dp)
+                                )
+                                Spacer(modifier = Modifier.height(12.dp))
                                 Text(
-                                    text = "⚠️ ERROR [${err.errorCode}]",
+                                    text = "ERROR [${err.errorCode}]",
                                     color = AqiUnhealthy,
                                     fontSize = 18.sp,
                                     fontWeight = FontWeight.Bold,
@@ -123,7 +128,7 @@ fun AQIScreen(
                                 Spacer(modifier = Modifier.height(12.dp))
                                 Text(
                                     text = err.errorMessage,
-                                    color = TextPrimary,
+                                    color = MaterialTheme.colorScheme.onSurface,
                                     fontSize = 14.sp,
                                     textAlign = TextAlign.Center,
                                     lineHeight = 20.sp
@@ -131,7 +136,7 @@ fun AQIScreen(
                                 Spacer(modifier = Modifier.height(20.dp))
                                 Button(
                                     onClick = { viewModel.refreshCurrentLocation() },
-                                    colors = ButtonDefaults.buttonColors(containerColor = AccentBlue),
+                                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                                     shape = RoundedCornerShape(12.dp)
                                 ) {
                                     Text("🔄 Retry Connection", color = Color.White, fontWeight = FontWeight.SemiBold)
@@ -159,8 +164,8 @@ fun AQIScreen(
 
                         // Live Pollutants Section
                         Text(
-                            text = "Live Pollutants Breakdown",
-                            color = TextPrimary,
+                            text = AppStrings.LivePollutants,
+                            color = MaterialTheme.colorScheme.onSurface,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold
                         )
@@ -213,23 +218,23 @@ fun HeaderSection(isOnline: Boolean, onCheckHealth: () -> Unit) {
         Spacer(modifier = Modifier.width(10.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = "AQI Vision",
-                color = TextPrimary,
+                text = AppStrings.AppName,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Black
             )
             Text(
-                text = "Real-Time Air Quality & ML Forecast",
-                color = TextSecondary,
+                text = AppStrings.AppSlogan,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 11.sp
             )
         }
         // Online status pill
         Surface(
             onClick = onCheckHealth,
-            color = Color(0x1A38BDF8),
+            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
             shape = CircleShape,
-            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0x4038BDF8))
+            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.25f))
         ) {
             Row(
                 modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
@@ -242,8 +247,8 @@ fun HeaderSection(isOnline: Boolean, onCheckHealth: () -> Unit) {
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = if (isOnline) "Backend Online" else "Backend Standby",
-                    color = TextPrimary,
+                    text = if (isOnline) AppStrings.BackendOnline else AppStrings.BackendOffline,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -272,9 +277,9 @@ fun LocationSelectorBar(
                 .weight(1f)
                 .height(44.dp)
                 .clickable { expanded = true },
-            color = CardBg,
+            color = MaterialTheme.colorScheme.surface,
             shape = RoundedCornerShape(12.dp),
-            border = androidx.compose.foundation.BorderStroke(1.dp, CardStroke)
+            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
         ) {
             Row(
                 modifier = Modifier
@@ -285,23 +290,23 @@ fun LocationSelectorBar(
             ) {
                 Text(
                     text = "${selectedCity.name}, ${selectedCity.country}",
-                    color = TextPrimary,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                Text(" 🔻", fontSize = 12.sp, color = TextSecondary)
+                Text(" 🔻", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
 
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
-                modifier = Modifier.background(CardBg)
+                modifier = Modifier.background(MaterialTheme.colorScheme.surface)
             ) {
                 presetCities.forEach { city ->
                     DropdownMenuItem(
-                        text = { Text("${city.name}, ${city.country}", color = TextPrimary) },
+                        text = { Text("${city.name}, ${city.country}", color = MaterialTheme.colorScheme.onSurface) },
                         onClick = {
                             expanded = false
                             onCitySelected(city)
@@ -318,12 +323,14 @@ fun LocationSelectorBar(
             onClick = onGpsClick,
             modifier = Modifier
                 .size(44.dp)
-                .background(CardBg, RoundedCornerShape(12.dp))
-                .border(1.dp, CardStroke, RoundedCornerShape(12.dp))
+                .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp))
+                .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(12.dp))
         ) {
-            Text(
-                text = "📍",
-                fontSize = 20.sp
+            Icon(
+                imageVector = AppIcons.Gps,
+                contentDescription = "GPS",
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(24.dp)
             )
         }
 
@@ -334,10 +341,15 @@ fun LocationSelectorBar(
             onClick = onCustomCoordsClick,
             modifier = Modifier
                 .size(44.dp)
-                .background(CardBg, RoundedCornerShape(12.dp))
-                .border(1.dp, CardStroke, RoundedCornerShape(12.dp))
+                .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp))
+                .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(12.dp))
         ) {
-            Text("📌", fontSize = 20.sp)
+            Icon(
+                imageVector = AppIcons.Location,
+                contentDescription = "Custom Location",
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(24.dp)
+            )
         }
     }
 }
@@ -349,7 +361,7 @@ fun HeroAqiCard(data: AqiUiState.Success) {
 
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        color = CardBg,
+        color = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(24.dp),
         border = androidx.compose.foundation.BorderStroke(2.dp, statusColor)
     ) {
@@ -361,13 +373,13 @@ fun HeroAqiCard(data: AqiUiState.Success) {
         ) {
             Text(
                 text = data.locationName,
-                color = TextPrimary,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Black
             )
             Text(
                 text = "Updated: ${pred.timestamp.replace("T", " ").take(16)}",
-                color = TextSecondary,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 11.sp
             )
 
@@ -385,7 +397,7 @@ fun HeroAqiCard(data: AqiUiState.Success) {
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
                     text = "AQI",
-                    color = TextSecondary,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Medium
                 )
@@ -418,7 +430,7 @@ fun HeroAqiCard(data: AqiUiState.Success) {
                     .height(8.dp)
                     .clip(CircleShape),
                 color = statusColor,
-                trackColor = CardStroke
+                trackColor = MaterialTheme.colorScheme.outline
             )
         }
     }
@@ -428,21 +440,30 @@ fun HeroAqiCard(data: AqiUiState.Success) {
 fun HealthAdvisoryCard(message: String) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        color = CardBg,
+        color = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(16.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, CardStroke)
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = "Health Recommendation",
-                color = AccentBlue,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = AppIcons.Info,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Health Recommendation",
+                    color = MaterialTheme.colorScheme.primary,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
             Spacer(modifier = Modifier.height(6.dp))
             Text(
                 text = message,
-                color = TextPrimary,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 13.sp,
                 lineHeight = 18.sp
             )
@@ -483,9 +504,9 @@ fun PollutantCardItem(pollutant: PollutantItem, modifier: Modifier = Modifier) {
 
     Surface(
         modifier = modifier,
-        color = CardBg,
+        color = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(16.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, CardStroke)
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
     ) {
         Column(modifier = Modifier.padding(14.dp)) {
             Row(
@@ -495,7 +516,7 @@ fun PollutantCardItem(pollutant: PollutantItem, modifier: Modifier = Modifier) {
             ) {
                 Text(
                     text = pollutant.key,
-                    color = AccentBlue,
+                    color = MaterialTheme.colorScheme.primary,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -515,7 +536,7 @@ fun PollutantCardItem(pollutant: PollutantItem, modifier: Modifier = Modifier) {
 
             Text(
                 text = pollutant.name,
-                color = TextSecondary,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 11.sp,
                 modifier = Modifier.padding(top = 4.dp),
                 maxLines = 1,
@@ -528,14 +549,14 @@ fun PollutantCardItem(pollutant: PollutantItem, modifier: Modifier = Modifier) {
             ) {
                 Text(
                     text = pollutant.formattedValue,
-                    color = TextPrimary,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Black
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = pollutant.unit,
-                    color = TextSecondary,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 11.sp,
                     modifier = Modifier.padding(bottom = 2.dp)
                 )
@@ -558,8 +579,8 @@ fun ForecastSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "AQI Predictions & Forecasts",
-                color = TextPrimary,
+                text = AppStrings.ForecastHeader,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -570,7 +591,7 @@ fun ForecastSection(
                     onClick = { onTabSelected(0) },
                     label = { Text("24-Hour", fontSize = 11.sp) },
                     colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = AccentBlue,
+                        selectedContainerColor = MaterialTheme.colorScheme.primary,
                         selectedLabelColor = Color.White
                     )
                 )
@@ -580,7 +601,7 @@ fun ForecastSection(
                     onClick = { onTabSelected(1) },
                     label = { Text("7-Day", fontSize = 11.sp) },
                     colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = AccentBlue,
+                        selectedContainerColor = MaterialTheme.colorScheme.primary,
                         selectedLabelColor = Color.White
                     )
                 )
@@ -598,24 +619,24 @@ fun ForecastSection(
             ) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(28.dp),
-                    color = AccentBlue,
+                    color = MaterialTheme.colorScheme.primary,
                     strokeWidth = 3.dp
                 )
             }
         } else if (forecastList.isEmpty()) {
             Surface(
                 modifier = Modifier.fillMaxWidth(),
-                color = CardBg,
+                color = MaterialTheme.colorScheme.surface,
                 shape = RoundedCornerShape(16.dp),
-                border = androidx.compose.foundation.BorderStroke(1.dp, CardStroke)
+                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
             ) {
                 Box(
                     modifier = Modifier.padding(16.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "No forecast data available.",
-                        color = TextSecondary,
+                        text = AppStrings.NoForecast,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 12.sp
                     )
                 }
@@ -638,15 +659,15 @@ fun ForecastCardItem(forecast: ForecastItem) {
 
     Surface(
         modifier = Modifier.width(125.dp),
-        color = CardBg,
+        color = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(16.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, CardStroke)
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
     ) {
         Column(
             modifier = Modifier.padding(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = forecast.time, color = TextSecondary, fontSize = 12.sp)
+            Text(text = forecast.time, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
             Spacer(modifier = Modifier.height(4.dp))
             Text(text = forecast.emoji, fontSize = 24.sp)
             Spacer(modifier = Modifier.height(4.dp))
@@ -679,15 +700,15 @@ fun CustomLocationDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        containerColor = CardBg,
+        containerColor = MaterialTheme.colorScheme.surface,
         title = {
-            Text("Custom Coordinates", color = TextPrimary, fontWeight = FontWeight.Bold)
+            Text(AppStrings.CustomLocationTitle, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)
         },
         text = {
             Column {
                 Text(
-                    "Enter Latitude and Longitude to query air quality anywhere worldwide.",
-                    color = TextSecondary,
+                    AppStrings.CustomLocationDesc,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 12.sp
                 )
                 Spacer(modifier = Modifier.height(12.dp))
@@ -698,10 +719,10 @@ fun CustomLocationDialog(
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = AccentBlue,
-                        focusedLabelColor = AccentBlue,
-                        focusedTextColor = TextPrimary,
-                        unfocusedTextColor = TextPrimary
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        focusedLabelColor = MaterialTheme.colorScheme.primary,
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                     )
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -712,10 +733,10 @@ fun CustomLocationDialog(
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = AccentBlue,
-                        focusedLabelColor = AccentBlue,
-                        focusedTextColor = TextPrimary,
-                        unfocusedTextColor = TextPrimary
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        focusedLabelColor = MaterialTheme.colorScheme.primary,
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                     )
                 )
             }
@@ -729,14 +750,14 @@ fun CustomLocationDialog(
                         onConfirm(lat, lon)
                     }
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = AccentBlue)
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
                 Text("Search", color = Color.White)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel", color = TextSecondary)
+                Text("Cancel", color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
     )
@@ -771,8 +792,8 @@ fun ThreeStepLoadingScreen(loadingState: AqiUiState.Loading) {
         Card(
             modifier = Modifier
                 .fillMaxWidth(0.92f)
-                .border(1.dp, CardStroke, RoundedCornerShape(24.dp)),
-            colors = CardDefaults.cardColors(containerColor = CardBg),
+                .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(24.dp)),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
             shape = RoundedCornerShape(24.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
         ) {
@@ -783,7 +804,7 @@ fun ThreeStepLoadingScreen(loadingState: AqiUiState.Loading) {
                 // Top Header Badge
                 Text(
                     text = "🍃 AQI VISION ENGINE",
-                    color = AccentBlue,
+                    color = MaterialTheme.colorScheme.primary,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 1.2.sp
@@ -799,7 +820,7 @@ fun ThreeStepLoadingScreen(loadingState: AqiUiState.Loading) {
                         .height(8.dp)
                         .clip(RoundedCornerShape(4.dp)),
                     color = AccentGreen,
-                    trackColor = CardStroke
+                    trackColor = MaterialTheme.colorScheme.outline
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -815,14 +836,14 @@ fun ThreeStepLoadingScreen(loadingState: AqiUiState.Loading) {
                         modifier = Modifier
                             .weight(1f)
                             .height(2.dp),
-                        color = if (step >= 2) AccentGreen else CardStroke
+                        color = if (step >= 2) AccentGreen else MaterialTheme.colorScheme.outline
                     )
                     StepItem(stepNumber = 2, title = "XGBoost ML", currentStep = step)
                     HorizontalDivider(
                         modifier = Modifier
                             .weight(1f)
                             .height(2.dp),
-                        color = if (step >= 3) AccentGreen else CardStroke
+                        color = if (step >= 3) AccentGreen else MaterialTheme.colorScheme.outline
                     )
                     StepItem(stepNumber = 3, title = "Forecast", currentStep = step)
                 }
@@ -832,7 +853,7 @@ fun ThreeStepLoadingScreen(loadingState: AqiUiState.Loading) {
                 // Pulsing Circular Progress
                 CircularProgressIndicator(
                     modifier = Modifier.size(48.dp),
-                    color = if (step == 1) AccentBlue else if (step == 2) AqiModerate else AccentGreen,
+                    color = if (step == 1) MaterialTheme.colorScheme.primary else if (step == 2) AqiModerate else AccentGreen,
                     strokeWidth = 4.dp
                 )
 
@@ -841,7 +862,7 @@ fun ThreeStepLoadingScreen(loadingState: AqiUiState.Loading) {
                 // Step Status Message
                 Text(
                     text = message,
-                    color = TextPrimary,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
                     textAlign = TextAlign.Center,
@@ -852,7 +873,7 @@ fun ThreeStepLoadingScreen(loadingState: AqiUiState.Loading) {
 
                 Text(
                     text = "Step $step of 3",
-                    color = TextSecondary,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -867,12 +888,12 @@ private fun StepItem(stepNumber: Int, title: String, currentStep: Int) {
     val isCurrent = currentStep == stepNumber
     val circleColor = when {
         isCompleted -> AccentGreen
-        isCurrent -> AccentBlue
-        else -> CardStroke
+        isCurrent -> MaterialTheme.colorScheme.primary
+        else -> MaterialTheme.colorScheme.outline
     }
     val textColor = when {
-        isCompleted || isCurrent -> TextPrimary
-        else -> TextSecondary
+        isCompleted || isCurrent -> MaterialTheme.colorScheme.onSurface
+        else -> MaterialTheme.colorScheme.onSurfaceVariant
     }
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -892,5 +913,3 @@ private fun StepItem(stepNumber: Int, title: String, currentStep: Int) {
         Text(text = title, color = textColor, fontSize = 10.sp, fontWeight = FontWeight.Medium)
     }
 }
-
-

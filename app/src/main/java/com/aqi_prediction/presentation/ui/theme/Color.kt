@@ -2,7 +2,7 @@ package com.aqi_prediction.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Modern Dark Glassmorphic Palette
+// Modern Dark Palette
 val DarkBg = Color(0xFF0F172A)
 val DarkCardBg = Color(0xFF1E293B)
 val DarkCardStroke = Color(0xFF334155)
@@ -17,16 +17,8 @@ val LightTextPrimary = Color(0xFF0F172A)
 val LightTextSecondary = Color(0xFF64748B)
 
 // Shared Accent Colors
-val AccentBlue = Color(0xFF0284C7)
+val AccentBlue = Color(0xFF38BDF8)
 val AccentGreen = Color(0xFF10B981)
-
-// Legacy alias for compatibility
-val BgDark = DarkBg
-val CardBg = DarkCardBg
-val CardStroke = DarkCardStroke
-val CardBgLight = Color(0xFF1E293B)
-val TextPrimary = DarkTextPrimary
-val TextSecondary = DarkTextSecondary
 
 // EPA Air Quality Standard Severity Colors
 val AqiGood = Color(0xFF00E400)
@@ -36,6 +28,6 @@ val AqiUnhealthy = Color(0xFFEF4444)
 val AqiVeryUnhealthy = Color(0xFF8B5CF6)
 val AqiHazardous = Color(0xFF991B1B)
 
+// Status Indicators
 val StatusOnline = Color(0xFF10B981)
 val StatusOffline = Color(0xFFEF4444)
-
